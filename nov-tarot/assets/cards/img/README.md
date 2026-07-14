@@ -4,7 +4,7 @@
 
 ## 命名约定
 
-文件名 = 牌的 `ref` + `.jpg`,ref 见 `references/card-index.md`。
+文件名 = 牌的 `ref` + `.jpg`,ref 命名见 `assets/card-data.json`。
 
 - 大阿卡纳:`the-fool.jpg`、`the-empress.jpg` ... `the-world.jpg`
 - 小阿卡纳:`<花色>-<数字或宫廷>.jpg`,如 `wands-ace.jpg`、`cups-queen.jpg`、`pentacles-10.jpg`

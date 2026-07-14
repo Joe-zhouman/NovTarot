@@ -40,7 +40,7 @@ HTML 报告应包含:
 - 占位框旁边(不旋转)标注正逆位文字标签,方便用户辨认(因为旋转后文字倒着,标签是兜底)。
 
 **将来真图接入(约定,现在不实现,但占位逻辑要为之预留):**
-- 真图路径约定:`assets/cards/img/<牌的 ref>.jpg`(ref 见 card-index,如 `the-empress.jpg`、`wands-ace.jpg`)。只放正位图。
+- 真图路径约定:`assets/cards/img/<牌的 ref>.jpg`(ref 命名见 `assets/card-data.json`,如 `the-empress.jpg`、`wands-ace.jpg`)。只放正位图。
 - 生成时检查图文件是否存在:存在则用 `<img src="...">` 替换占位框(逆位同样 rotate 180°);不存在则继续用占位框。
 - 这个降级检查现在不用写代码实现(占位阶段图都不存在),但你的 HTML 结构要让"占位框 ↔ img"的替换是局部的、容易做的——比如把卡图位置包在一个统一 class 的容器里,正逆位旋转加在这个容器上,内部是占位框还是 img 将来可换。
 
