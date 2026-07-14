@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>塔罗会话报告 · 紫塔之夜</title>
+<style>
+  :root{
+    --bg-deepest:#160c2b;
+    --bg-deep:#1a1033;
+    --bg-mid:#241445;
+    --bg-veil:#2e1a52;
+    --purple-glow:#5b3a8c;
+    --purple-soft:#7a5bb0;
+    --purple-line:#3d2660;
+    --gold:#d4af6a;
+    --gold-soft:#b8924f;
+    --text-main:#ece4d8;
+    --text-muted:#b8a8c9;
+    --text-faint:#8a7a9c;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:var(--bg-deepest);}
+  body{
+    font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Songti SC","Noto Serif SC",serif;
+    color:var(--text-main);
+    line-height:1.85;
+    font-size:17px;
+    background:
+      radial-gradient(ellipse at 18% 0%, rgba(91,58,140,0.35) 0%, transparent 55%),
+      radial-gradient(ellipse at 85% 12%, rgba(122,91,176,0.22) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 100%, rgba(46,26,82,0.55) 0%, transparent 60%),
+      linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-mid) 40%, var(--bg-deep) 100%);
+    background-attachment:fixed;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{
+    max-width:820px;
+    margin:0 auto;
+    padding:72px 28px 96px;
+  }
+
+  /* 标题与会话概览 */
+  .masthead{text-align:center;padding-bottom:48px;border-bottom:1px solid var(--purple-line);}
+  .ornament{
+    color:var(--gold);
+    font-size:1.5rem;
+    letter-spacing:0.6em;
+    margin-bottom:18px;
+    opacity:0.85;
+  }
+  .masthead h1{
+    font-weight:400;
+    font-size:2.6rem;
+    letter-spacing:0.08em;
+    color:var(--text-main);
+    margin-bottom:10px;
+  }
+  .masthead .subtitle{
+    color:var(--gold-soft);
+    font-style:italic;
+    font-size:1.02rem;
+    letter-spacing:0.05em;
+    margin-bottom:30px;
+  }
+  .meta{
+    color:var(--text-muted);
+    font-size:0.92rem;
+    line-height:1.9;
+  }
+  .meta .row{display:block;}
+  .meta .label{
+    color:var(--purple-soft);
+    font-style:italic;
+    margin-right:8px;
+  }
+
+  /* 章节标题 */
+  h2.section-title{
+    font-weight:400;
+    font-size:1.55rem;
+    letter-spacing:0.12em;
+    color:var(--gold);
+    text-align:center;
+    margin:72px 0 8px;
+    position:relative;
+  }
+  .section-flourish{
+    text-align:center;
+    color:var(--purple-soft);
+    letter-spacing:0.4em;
+    margin-bottom:34px;
+    font-size:0.85rem;
+    opacity:0.7;
+  }
+
+  /* 逐轮记录 */
+  .turn{
+    background:linear-gradient(180deg, rgba(46,26,82,0.45) 0%, rgba(26,16,51,0.55) 100%);
+    border:1px solid var(--purple-line);
+    border-radius:6px;
+    padding:38px 34px 40px;
+    margin-bottom:34px;
+    box-shadow:0 8px 30px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.03);
+  }
+  .turn-head{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:8px 16px;
+    padding-bottom:18px;
+    border-bottom:1px dashed var(--purple-line);
+    margin-bottom:24px;
+  }
+  .turn-num{
+    font-size:1.3rem;
+    color:var(--gold);
+    letter-spacing:0.1em;
+  }
+  .turn-tags{display:flex;gap:8px;flex-wrap:wrap;}
+  .tag{
+    font-size:0.76rem;
+    letter-spacing:0.08em;
+    padding:3px 12px;
+    border:1px solid var(--purple-soft);
+    border-radius:20px;
+    color:var(--text-muted);
+    background:rgba(91,58,140,0.18);
+  }
+  .turn-question{
+    font-style:italic;
+    color:var(--text-main);
+    font-size:1.08rem;
+    padding:6px 0 6px 16px;
+    border-left:2px solid var(--gold-soft);
+    margin-bottom:28px;
+  }
+  .turn-question::before{
+    content:"问 · ";
+    color:var(--gold-soft);
+    font-style:normal;
+  }
+
+  /* 卡图区 */
+  .cards-row{
+    display:flex;
+    gap:24px;
+    justify-content:center;
+    flex-wrap:wrap;
+    margin:18px 0 30px;
+  }
+  .card-slot{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+    width:150px;
+  }
+  /* 统一旋转容器:将来占位框换 <img> 时旋转逻辑不变 */
+  .card-rotator{
+    width:140px;
+    height:245px; /* 2:3.5 */
+  }
+  /* 占位框本身 */
+  .card-placeholder{
+    width:100%;
+    height:100%;
+    background:
+      radial-gradient(ellipse at 50% 30%, rgba(91,58,140,0.45) 0%, transparent 70%),
+      linear-gradient(165deg, #2a1850 0%, #1c1140 60%, #140a2e 100%);
+    border:1px solid var(--gold);
+    border-radius:8px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    padding:14px 8px;
+    box-shadow:0 4px 16px rgba(0,0,0,0.4), inset 0 0 0 3px rgba(212,175,106,0.08);
+    position:relative;
+  }
+  .card-placeholder::before,
+  .card-placeholder::after{
+    content:"";
+    position:absolute;
+    left:6px;right:6px;
+    height:1px;
+    background:var(--gold-soft);
+    opacity:0.4;
+  }
+  .card-placeholder::before{top:8px;}
+  .card-placeholder::after{bottom:8px;}
+  .card-suit{
+    font-size:1.8rem;
+    color:var(--gold);
+    line-height:1;
+    text-shadow:0 0 12px rgba(212,175,106,0.4);
+  }
+  .card-name-cn{
+    font-size:1.02rem;
+    color:var(--text-main);
+    letter-spacing:0.06em;
+    text-align:center;
+  }
+  .card-name-en{
+    font-size:0.68rem;
+    color:var(--text-faint);
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    text-align:center;
+  }
+  /* 逆位:整个旋转容器转 180°,内部占位框连同文字一起倒过来 */
+  .card-rotator.reversed{transform:rotate(180deg);}
+  /* 旁边不旋转的兜底标签 */
+  .card-label{
+    text-align:center;
+    font-size:0.82rem;
+    line-height:1.5;
+  }
+  .card-label .pos{
+    color:var(--purple-soft);
+    font-style:italic;
+    display:block;
+    font-size:0.78rem;
+  }
+  .card-label .orient{
+    color:var(--gold-soft);
+    letter-spacing:0.08em;
+    font-size:0.74rem;
+  }
+  .card-label .orient.rev{color:#c66;}
+
+  /* 单牌居中 */
+  .cards-row.single{justify-content:center;}
+
+  /* 摘要 */
+  .summary{
+    background:rgba(22,12,43,0.5);
+    border-left:2px solid var(--purple-soft);
+    padding:20px 24px;
+    border-radius:0 4px 4px 0;
+    color:var(--text-main);
+    font-size:1.0rem;
+    line-height:1.95;
+  }
+  .summary-label{
+    display:block;
+    color:var(--gold-soft);
+    font-size:0.78rem;
+    letter-spacing:0.15em;
+    margin-bottom:8px;
+    font-style:italic;
+  }
+
+  /* 脉络与结语 */
+  .narrative{
+    background:linear-gradient(180deg, rgba(46,26,82,0.4) 0%, rgba(26,16,51,0.5) 100%);
+    border:1px solid var(--purple-line);
+    border-radius:6px;
+    padding:40px 36px;
+    line-height:2.0;
+  }
+  .narrative p{margin-bottom:18px;}
+  .narrative p:last-child{margin-bottom:0;}
+  .narrative .lead-cap{
+    color:var(--gold);
+    font-size:1.25rem;
+    margin-right:2px;
+  }
+
+  .closing{
+    text-align:center;
+    padding:24px 20px 0;
+    color:var(--text-muted);
+    font-style:italic;
+    line-height:2.0;
+  }
+  .closing-mark{
+    color:var(--gold);
+    letter-spacing:0.5em;
+    margin-top:30px;
+    font-size:1.1rem;
+    opacity:0.7;
+  }
+  .footnote{
+    text-align:center;
+    color:var(--text-faint);
+    font-size:0.74rem;
+    margin-top:40px;
+    letter-spacing:0.05em;
+  }
+
+  /* 响应式 */
+  @media (max-width:560px){
+    .wrap{padding:48px 16px 64px;}
+    .masthead h1{font-size:1.9rem;}
+    .turn{padding:28px 20px;}
+    .card-slot{width:120px;}
+    .card-rotator{width:120px;height:210px;}
+    .card-suit{font-size:1.5rem;}
+    .card-name-cn{font-size:0.92rem;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 标题与会话概览 -->
+  <header class="masthead">
+    <div class="ornament">✦ ✧ ✦</div>
+    <h1>紫塔之夜</h1>
+    <div class="subtitle">一场关于选择与内在时机的塔罗会话</div>
+    <div class="meta">
+      <span class="row"><span class="label">起牌于</span>2026 年 7 月 14 日，子夜之后</span>
+      <span class="row"><span class="label">共</span>三轮 · 时间流 · 单牌 · 时间流</span>
+      <span class="row"><span class="label">最初所问</span>我最近的感情会有什么发展？</span>
+    </div>
+  </header>
+
+  <!-- 逐轮记录 -->
+  <h2 class="section-title">逐轮记录</h2>
+  <div class="section-flourish">· · ·</div>
+
+  <!-- 轮 1 -->
+  <section class="turn">
+    <div class="turn-head">
+      <span class="turn-num">第一轮</span>
+      <div class="turn-tags">
+        <span class="tag">时间流牌阵</span>
+        <span class="tag">整体揭示</span>
+      </div>
+    </div>
+    <div class="turn-question">我最近的感情会有什么发展？</div>
+
+    <div class="cards-row">
+      <div class="card-slot">
+        <div class="card-rotator">
+          <div class="card-placeholder">
+            <div class="card-suit">🩸</div>
+            <div class="card-name-cn">圣杯六</div>
+            <div class="card-name-en">Cups · Six</div>
+          </div>
+        </div>
+        <div class="card-label">
+          <span class="pos">过去 / 根基</span>
+          <span class="orient">正位</span>
+        </div>
+      </div>
+
+      <div class="card-slot">
+        <div class="card-rotator reversed">
+          <div class="card-placeholder">
+            <div class="card-suit">✦</div>
+            <div class="card-name-cn">太阳</div>
+            <div class="card-name-en">The Sun</div>
+          </div>
+        </div>
+        <div class="card-label">
+          <span class="pos">现在 / 状态</span>
+          <span class="orient rev">逆位</span>
+        </div>
+      </div>
+
+      <div class="card-slot">
+        <div class="card-rotator">
+          <div class="card-placeholder">
+            <div class="card-suit">⚔️</div>
+            <div class="card-name-cn">宝剑王牌</div>
+            <div class="card-name-en">Swords · Ace</div>
+          </div>
+        </div>
+        <div class="card-label">
+          <span class="pos">未来 / 趋势</span>
+          <span class="orient">正位</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary">
+      <span class="summary-label">解读摘要</span>
+      过去圣杯六正位——怀旧与纯真的情感底色。现在太阳逆位——喜悦暂时被云遮住，情绪低谷是过渡，不是终点。未来宝剑王牌正位——一次清醒的决断会破开迷雾。三牌水→火→风，从情感记忆走到被遮蔽的当下，再迎来思维的清明。三个缘分在酝酿，但低潮是过渡，清晰会回来。
+    </div>
+  </section>
+
+  <!-- 轮 2 -->
+  <section class="turn">
+    <div class="turn-head">
+      <span class="turn-num">第二轮</span>
+      <div class="turn-tags">
+        <span class="tag">单牌牌阵</span>
+        <span class="tag">分组揭示</span>
+      </div>
+    </div>
+    <div class="turn-question">这三个人里，选哪个更合适？</div>
+
+    <div class="cards-row single">
+      <div class="card-slot">
+        <div class="card-rotator">
+          <div class="card-placeholder">
+            <div class="card-suit">✦</div>
+            <div class="card-name-cn">节制</div>
+            <div class="card-name-en">Temperance</div>
+          </div>
+        </div>
+        <div class="card-label">
+          <span class="pos">大阿卡纳 · 单牌回答</span>
+          <span class="orient">正位</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary">
+      <span class="summary-label">解读摘要</span>
+      单牌正位节制——炼金术士的原型，平衡与调和。它指向的并非某一个人，而是一种状态：能与你达成平衡、关系如水般自然调和、不极端也不灼热的人，才合适。选那个让你平和、不必较劲的。
+    </div>
+  </section>
+
+  <!-- 轮 3 -->
+  <section class="turn">
+    <div class="turn-head">
+      <span class="turn-num">第三轮</span>
+      <div class="turn-tags">
+        <span class="tag">时间流牌阵</span>
+        <span class="tag">分组揭示</span>
+      </div>
+    </div>
+    <div class="turn-question">如果选 A，后续会怎样发展？</div>
+
+    <div class="cards-row">
+      <div class="card-slot">
+        <div class="card-rotator">
+          <div class="card-placeholder">
+            <div class="card-suit">🩸</div>
+            <div class="card-name-cn">圣杯二</div>
+            <div class="card-name-en">Cups · Two</div>
+          </div>
+        </div>
+        <div class="card-label">
+          <span class="pos">过去 / 根基</span>
+          <span class="orient">正位</span>
+        </div>
+      </div>
+
+      <div class="card-slot">
+        <div class="card-rotator reversed">
+          <div class="card-placeholder">
+            <div class="card-suit">✦</div>
+            <div class="card-name-cn">命运之轮</div>
+            <div class="card-name-en">Wheel of Fortune</div>
+          </div>
+        </div>
+        <div class="card-label">
+          <span class="pos">现在 / 状态</span>
+          <span class="orient rev">逆位</span>
+        </div>
+      </div>
+
+      <div class="card-slot">
+        <div class="card-rotator">
+          <div class="card-placeholder">
+            <div class="card-suit">✦</div>
+            <div class="card-name-cn">女祭司</div>
+            <div class="card-name-en">The High Priestess</div>
+          </div>
+        </div>
+        <div class="card-label">
+          <span class="pos">未来 / 趋势</span>
+          <span class="orient">正位</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary">
+      <span class="summary-label">解读摘要</span>
+      针对 A：过去圣杯二正位——相互吸引、平等的连接为起点。现在命运之轮逆位——时机卡顿，转变未如期而至，需要耐心。未来女祭司正位——进入更深的内在阶段，直觉比言语更重要。三牌水→火→水，从连接到卡顿，再到深层洞察。命运之轮逆位时别硬推，静候时机，信任内在的感觉。
+    </div>
+  </section>
+
+  <!-- 整体脉络回顾 -->
+  <h2 class="section-title">整体脉络回顾</h2>
+  <div class="section-flourish">· · ·</div>
+
+  <div class="narrative">
+    <p><span class="lead-cap">这</span>场会话从一片迷雾开始。你带着"感情会有什么发展"走进牌阵，第一轮时间流给出的不是答案，而是一张情绪地图：圣杯六正位铺下怀旧与纯真的底色，太阳逆位告诉你此刻正处在喜悦被云遮住的低谷，而宝剑王牌正位在前方等候——一次清醒的决断会破开迷雾。水、火、风三牌依次走过，低潮被框定为过渡，清晰被许诺会回来。</p>
+
+    <p>但第一轮里冒出了一个岔路口——"三个缘分在酝酿"。于是你追问：这三个人，选谁更合适？第二轮抽到单牌节制正位。这张牌巧妙地绕开了"选哪一个"的框架：它指向的不是某个人，而是一种状态。能让你平和、关系如水自然调和、不必较劲的那个人，才是答案。节制把"选谁"这个问题，悄悄翻译成了"和谁在一起时你是平衡的"。</p>
+
+    <p>带着这把尺子，你进一步问：如果选 A，后续会怎样？第三轮时间流给出了更具体的图景。圣杯二正位确认了 A 的起点——相互吸引、平等连接；但命运之轮逆位立刻给出了警示——时机卡顿，转变未如期，此刻不宜强推；而女祭司正位指明了去向——进入更深的内在阶段，直觉比言语重要。从连接到卡顿，再到深层洞察，水→火→水绕了一圈，落回内在。</p>
+
+    <p>三轮串起来，是一条清晰的线：从"感情会怎样"的茫然，到"该怎么选"的尺子，再到"选 A 之后如何"的具体图景。牌阵没有替你做决定，但它给了你两样东西——一把判断平衡的尺子（节制），和一份关于时机的提醒（命运之轮逆位时别硬推，女祭司正位时信直觉）。迷雾仍在，但你已知道它何时会散、散去之后该用什么姿态走进去。</p>
+  </div>
+
+  <!-- 结语 -->
+  <h2 class="section-title">结语</h2>
+  <div class="section-flourish">· · ·</div>
+
+  <div class="closing">
+    <p>塔罗不替你选择，它只把光照向你尚未看见的角落。</p>
+    <p>这一夜你问的是感情，得到的却是一面镜子——</p>
+    <p>照见低谷是过渡，照见平衡是尺子，照见时机需要等待。</p>
+    <p>带着这些回去。当迷雾散去、宝剑出鞘的那一刻，</p>
+    <p>你会知道该走向谁。</p>
+    <div class="closing-mark">✦ ✧ ✦</div>
+  </div>
+
+  <div class="footnote">
+    本报告基于会话记录整理，解读摘要均来自原次会话，未作新牌意发明。<br>
+    卡图为占位框，逆位以整体旋转 180° 表达——将来换入真图时旋转逻辑不变。
+  </div>
+
+</div>
+</body>
+</html>

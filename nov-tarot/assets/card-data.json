@@ -1,0 +1,786 @@
+{
+  "deck": "rider-waite-smith",
+  "count": 78,
+  "cards": [
+    {
+      "ref": "the-fool",
+      "en": "TheFool",
+      "cn": "愚者",
+      "suit": "major",
+      "rank": 0,
+      "element": "风",
+      "planet": "天王星",
+      "sign": "水瓶座"
+    },
+    {
+      "ref": "the-magician",
+      "en": "TheMagician",
+      "cn": "魔术师",
+      "suit": "major",
+      "rank": 1,
+      "element": "风",
+      "planet": "水星",
+      "sign": ""
+    },
+    {
+      "ref": "the-high-priestess",
+      "en": "TheHighPriestess",
+      "cn": "女祭司",
+      "suit": "major",
+      "rank": 2,
+      "element": "水",
+      "planet": "月亮",
+      "sign": ""
+    },
+    {
+      "ref": "the-empress",
+      "en": "TheEmpress",
+      "cn": "女皇",
+      "suit": "major",
+      "rank": 3,
+      "element": "土",
+      "planet": "金星",
+      "sign": ""
+    },
+    {
+      "ref": "the-emperor",
+      "en": "TheEmperor",
+      "cn": "皇帝",
+      "suit": "major",
+      "rank": 4,
+      "element": "火",
+      "planet": "火星",
+      "sign": "白羊座"
+    },
+    {
+      "ref": "the-hierophant",
+      "en": "TheHierophant",
+      "cn": "教皇",
+      "suit": "major",
+      "rank": 5,
+      "element": "土",
+      "planet": "金星",
+      "sign": "金牛座"
+    },
+    {
+      "ref": "the-lovers",
+      "en": "TheLovers",
+      "cn": "恋人",
+      "suit": "major",
+      "rank": 6,
+      "element": "风",
+      "planet": "水星",
+      "sign": "双子座"
+    },
+    {
+      "ref": "the-chariot",
+      "en": "TheChariot",
+      "cn": "战车",
+      "suit": "major",
+      "rank": 7,
+      "element": "水",
+      "planet": "月亮",
+      "sign": "巨蟹座"
+    },
+    {
+      "ref": "strength",
+      "en": "Strength",
+      "cn": "力量",
+      "suit": "major",
+      "rank": 8,
+      "element": "火",
+      "planet": "太阳",
+      "sign": "狮子座"
+    },
+    {
+      "ref": "the-hermit",
+      "en": "TheHermit",
+      "cn": "隐士",
+      "suit": "major",
+      "rank": 9,
+      "element": "土",
+      "planet": "水星",
+      "sign": "处女座"
+    },
+    {
+      "ref": "wheel-of-fortune",
+      "en": "WheelofFortune",
+      "cn": "命运之轮",
+      "suit": "major",
+      "rank": 10,
+      "element": "火",
+      "planet": "木星",
+      "sign": ""
+    },
+    {
+      "ref": "justice",
+      "en": "Justice",
+      "cn": "正义",
+      "suit": "major",
+      "rank": 11,
+      "element": "风",
+      "planet": "金星",
+      "sign": "天秤座"
+    },
+    {
+      "ref": "the-hanged-man",
+      "en": "TheHangedMan",
+      "cn": "倒吊人",
+      "suit": "major",
+      "rank": 12,
+      "element": "水",
+      "planet": "海王星",
+      "sign": ""
+    },
+    {
+      "ref": "death",
+      "en": "Death",
+      "cn": "死神",
+      "suit": "major",
+      "rank": 13,
+      "element": "水",
+      "planet": "冥王星",
+      "sign": "天蝎座"
+    },
+    {
+      "ref": "temperance",
+      "en": "Temperance",
+      "cn": "节制",
+      "suit": "major",
+      "rank": 14,
+      "element": "火",
+      "planet": "木星",
+      "sign": "射手座"
+    },
+    {
+      "ref": "the-devil",
+      "en": "TheDevil",
+      "cn": "恶魔",
+      "suit": "major",
+      "rank": 15,
+      "element": "土",
+      "planet": "土星",
+      "sign": "摩羯座"
+    },
+    {
+      "ref": "the-tower",
+      "en": "TheTower",
+      "cn": "高塔",
+      "suit": "major",
+      "rank": 16,
+      "element": "火",
+      "planet": "火星",
+      "sign": ""
+    },
+    {
+      "ref": "the-star",
+      "en": "TheStar",
+      "cn": "星星",
+      "suit": "major",
+      "rank": 17,
+      "element": "风",
+      "planet": "天王星",
+      "sign": "水瓶座"
+    },
+    {
+      "ref": "the-moon",
+      "en": "TheMoon",
+      "cn": "月亮",
+      "suit": "major",
+      "rank": 18,
+      "element": "水",
+      "planet": "海王星",
+      "sign": "双鱼座"
+    },
+    {
+      "ref": "the-sun",
+      "en": "TheSun",
+      "cn": "太阳",
+      "suit": "major",
+      "rank": 19,
+      "element": "火",
+      "planet": "太阳",
+      "sign": ""
+    },
+    {
+      "ref": "judgement",
+      "en": "Judgement",
+      "cn": "审判",
+      "suit": "major",
+      "rank": 20,
+      "element": "水",
+      "planet": "冥王星",
+      "sign": ""
+    },
+    {
+      "ref": "the-world",
+      "en": "TheWorld",
+      "cn": "世界",
+      "suit": "major",
+      "rank": 21,
+      "element": "土",
+      "planet": "土星",
+      "sign": ""
+    },
+    {
+      "ref": "wands-ace",
+      "en": "Wands-Ace",
+      "cn": "权杖王牌",
+      "suit": "wands",
+      "rank": 1,
+      "element": "火",
+      "planet": "火星",
+      "sign": ""
+    },
+    {
+      "ref": "wands-2",
+      "en": "Wands-2",
+      "cn": "权杖二",
+      "suit": "wands",
+      "rank": 2,
+      "element": "火",
+      "planet": "火星",
+      "sign": ""
+    },
+    {
+      "ref": "wands-3",
+      "en": "Wands-3",
+      "cn": "权杖三",
+      "suit": "wands",
+      "rank": 3,
+      "element": "火",
+      "planet": "火星",
+      "sign": ""
+    },
+    {
+      "ref": "wands-4",
+      "en": "Wands-4",
+      "cn": "权杖四",
+      "suit": "wands",
+      "rank": 4,
+      "element": "火",
+      "planet": "火星",
+      "sign": ""
+    },
+    {
+      "ref": "wands-5",
+      "en": "Wands-5",
+      "cn": "权杖五",
+      "suit": "wands",
+      "rank": 5,
+      "element": "火",
+      "planet": "火星",
+      "sign": ""
+    },
+    {
+      "ref": "wands-6",
+      "en": "Wands-6",
+      "cn": "权杖六",
+      "suit": "wands",
+      "rank": 6,
+      "element": "火",
+      "planet": "火星",
+      "sign": ""
+    },
+    {
+      "ref": "wands-7",
+      "en": "Wands-7",
+      "cn": "权杖七",
+      "suit": "wands",
+      "rank": 7,
+      "element": "火",
+      "planet": "火星",
+      "sign": ""
+    },
+    {
+      "ref": "wands-8",
+      "en": "Wands-8",
+      "cn": "权杖八",
+      "suit": "wands",
+      "rank": 8,
+      "element": "火",
+      "planet": "火星",
+      "sign": ""
+    },
+    {
+      "ref": "wands-9",
+      "en": "Wands-9",
+      "cn": "权杖九",
+      "suit": "wands",
+      "rank": 9,
+      "element": "火",
+      "planet": "火星",
+      "sign": ""
+    },
+    {
+      "ref": "wands-10",
+      "en": "Wands-10",
+      "cn": "权杖十",
+      "suit": "wands",
+      "rank": 10,
+      "element": "火",
+      "planet": "火星",
+      "sign": ""
+    },
+    {
+      "ref": "wands-page",
+      "en": "Wands-Page",
+      "cn": "权杖侍从",
+      "suit": "wands",
+      "rank": "page",
+      "element": "火",
+      "planet": "火星",
+      "sign": ""
+    },
+    {
+      "ref": "wands-knight",
+      "en": "Wands-Knight",
+      "cn": "权杖骑士",
+      "suit": "wands",
+      "rank": "knight",
+      "element": "火",
+      "planet": "火星",
+      "sign": ""
+    },
+    {
+      "ref": "wands-queen",
+      "en": "Wands-Queen",
+      "cn": "权杖皇后",
+      "suit": "wands",
+      "rank": "queen",
+      "element": "火",
+      "planet": "火星",
+      "sign": ""
+    },
+    {
+      "ref": "wands-king",
+      "en": "Wands-King",
+      "cn": "权杖国王",
+      "suit": "wands",
+      "rank": "king",
+      "element": "火",
+      "planet": "火星",
+      "sign": ""
+    },
+    {
+      "ref": "cups-ace",
+      "en": "Cups-Ace",
+      "cn": "圣杯王牌",
+      "suit": "cups",
+      "rank": 1,
+      "element": "水",
+      "planet": "月亮",
+      "sign": ""
+    },
+    {
+      "ref": "cups-2",
+      "en": "Cups-2",
+      "cn": "圣杯二",
+      "suit": "cups",
+      "rank": 2,
+      "element": "水",
+      "planet": "月亮",
+      "sign": ""
+    },
+    {
+      "ref": "cups-3",
+      "en": "Cups-3",
+      "cn": "圣杯三",
+      "suit": "cups",
+      "rank": 3,
+      "element": "水",
+      "planet": "月亮",
+      "sign": ""
+    },
+    {
+      "ref": "cups-4",
+      "en": "Cups-4",
+      "cn": "圣杯四",
+      "suit": "cups",
+      "rank": 4,
+      "element": "水",
+      "planet": "月亮",
+      "sign": ""
+    },
+    {
+      "ref": "cups-5",
+      "en": "Cups-5",
+      "cn": "圣杯五",
+      "suit": "cups",
+      "rank": 5,
+      "element": "水",
+      "planet": "月亮",
+      "sign": ""
+    },
+    {
+      "ref": "cups-6",
+      "en": "Cups-6",
+      "cn": "圣杯六",
+      "suit": "cups",
+      "rank": 6,
+      "element": "水",
+      "planet": "月亮",
+      "sign": ""
+    },
+    {
+      "ref": "cups-7",
+      "en": "Cups-7",
+      "cn": "圣杯七",
+      "suit": "cups",
+      "rank": 7,
+      "element": "水",
+      "planet": "月亮",
+      "sign": ""
+    },
+    {
+      "ref": "cups-8",
+      "en": "Cups-8",
+      "cn": "圣杯八",
+      "suit": "cups",
+      "rank": 8,
+      "element": "水",
+      "planet": "月亮",
+      "sign": ""
+    },
+    {
+      "ref": "cups-9",
+      "en": "Cups-9",
+      "cn": "圣杯九",
+      "suit": "cups",
+      "rank": 9,
+      "element": "水",
+      "planet": "月亮",
+      "sign": ""
+    },
+    {
+      "ref": "cups-10",
+      "en": "Cups-10",
+      "cn": "圣杯十",
+      "suit": "cups",
+      "rank": 10,
+      "element": "水",
+      "planet": "月亮",
+      "sign": ""
+    },
+    {
+      "ref": "cups-page",
+      "en": "Cups-Page",
+      "cn": "圣杯侍从",
+      "suit": "cups",
+      "rank": "page",
+      "element": "水",
+      "planet": "月亮",
+      "sign": ""
+    },
+    {
+      "ref": "cups-knight",
+      "en": "Cups-Knight",
+      "cn": "圣杯骑士",
+      "suit": "cups",
+      "rank": "knight",
+      "element": "水",
+      "planet": "月亮",
+      "sign": ""
+    },
+    {
+      "ref": "cups-queen",
+      "en": "Cups-Queen",
+      "cn": "圣杯皇后",
+      "suit": "cups",
+      "rank": "queen",
+      "element": "水",
+      "planet": "月亮",
+      "sign": ""
+    },
+    {
+      "ref": "cups-king",
+      "en": "Cups-King",
+      "cn": "圣杯国王",
+      "suit": "cups",
+      "rank": "king",
+      "element": "水",
+      "planet": "月亮",
+      "sign": ""
+    },
+    {
+      "ref": "swords-ace",
+      "en": "Swords-Ace",
+      "cn": "宝剑王牌",
+      "suit": "swords",
+      "rank": 1,
+      "element": "风",
+      "planet": "水星",
+      "sign": ""
+    },
+    {
+      "ref": "swords-2",
+      "en": "Swords-2",
+      "cn": "宝剑二",
+      "suit": "swords",
+      "rank": 2,
+      "element": "风",
+      "planet": "水星",
+      "sign": ""
+    },
+    {
+      "ref": "swords-3",
+      "en": "Swords-3",
+      "cn": "宝剑三",
+      "suit": "swords",
+      "rank": 3,
+      "element": "风",
+      "planet": "水星",
+      "sign": ""
+    },
+    {
+      "ref": "swords-4",
+      "en": "Swords-4",
+      "cn": "宝剑四",
+      "suit": "swords",
+      "rank": 4,
+      "element": "风",
+      "planet": "水星",
+      "sign": ""
+    },
+    {
+      "ref": "swords-5",
+      "en": "Swords-5",
+      "cn": "宝剑五",
+      "suit": "swords",
+      "rank": 5,
+      "element": "风",
+      "planet": "水星",
+      "sign": ""
+    },
+    {
+      "ref": "swords-6",
+      "en": "Swords-6",
+      "cn": "宝剑六",
+      "suit": "swords",
+      "rank": 6,
+      "element": "风",
+      "planet": "水星",
+      "sign": ""
+    },
+    {
+      "ref": "swords-7",
+      "en": "Swords-7",
+      "cn": "宝剑七",
+      "suit": "swords",
+      "rank": 7,
+      "element": "风",
+      "planet": "水星",
+      "sign": ""
+    },
+    {
+      "ref": "swords-8",
+      "en": "Swords-8",
+      "cn": "宝剑八",
+      "suit": "swords",
+      "rank": 8,
+      "element": "风",
+      "planet": "水星",
+      "sign": ""
+    },
+    {
+      "ref": "swords-9",
+      "en": "Swords-9",
+      "cn": "宝剑九",
+      "suit": "swords",
+      "rank": 9,
+      "element": "风",
+      "planet": "水星",
+      "sign": ""
+    },
+    {
+      "ref": "swords-10",
+      "en": "Swords-10",
+      "cn": "宝剑十",
+      "suit": "swords",
+      "rank": 10,
+      "element": "风",
+      "planet": "水星",
+      "sign": ""
+    },
+    {
+      "ref": "swords-page",
+      "en": "Swords-Page",
+      "cn": "宝剑侍从",
+      "suit": "swords",
+      "rank": "page",
+      "element": "风",
+      "planet": "水星",
+      "sign": ""
+    },
+    {
+      "ref": "swords-knight",
+      "en": "Swords-Knight",
+      "cn": "宝剑骑士",
+      "suit": "swords",
+      "rank": "knight",
+      "element": "风",
+      "planet": "水星",
+      "sign": ""
+    },
+    {
+      "ref": "swords-queen",
+      "en": "Swords-Queen",
+      "cn": "宝剑皇后",
+      "suit": "swords",
+      "rank": "queen",
+      "element": "风",
+      "planet": "水星",
+      "sign": ""
+    },
+    {
+      "ref": "swords-king",
+      "en": "Swords-King",
+      "cn": "宝剑国王",
+      "suit": "swords",
+      "rank": "king",
+      "element": "风",
+      "planet": "水星",
+      "sign": ""
+    },
+    {
+      "ref": "pentacles-ace",
+      "en": "Pentacles-Ace",
+      "cn": "星币王牌",
+      "suit": "pentacles",
+      "rank": 1,
+      "element": "土",
+      "planet": "金星",
+      "sign": ""
+    },
+    {
+      "ref": "pentacles-2",
+      "en": "Pentacles-2",
+      "cn": "星币二",
+      "suit": "pentacles",
+      "rank": 2,
+      "element": "土",
+      "planet": "金星",
+      "sign": ""
+    },
+    {
+      "ref": "pentacles-3",
+      "en": "Pentacles-3",
+      "cn": "星币三",
+      "suit": "pentacles",
+      "rank": 3,
+      "element": "土",
+      "planet": "金星",
+      "sign": ""
+    },
+    {
+      "ref": "pentacles-4",
+      "en": "Pentacles-4",
+      "cn": "星币四",
+      "suit": "pentacles",
+      "rank": 4,
+      "element": "土",
+      "planet": "金星",
+      "sign": ""
+    },
+    {
+      "ref": "pentacles-5",
+      "en": "Pentacles-5",
+      "cn": "星币五",
+      "suit": "pentacles",
+      "rank": 5,
+      "element": "土",
+      "planet": "金星",
+      "sign": ""
+    },
+    {
+      "ref": "pentacles-6",
+      "en": "Pentacles-6",
+      "cn": "星币六",
+      "suit": "pentacles",
+      "rank": 6,
+      "element": "土",
+      "planet": "金星",
+      "sign": ""
+    },
+    {
+      "ref": "pentacles-7",
+      "en": "Pentacles-7",
+      "cn": "星币七",
+      "suit": "pentacles",
+      "rank": 7,
+      "element": "土",
+      "planet": "金星",
+      "sign": ""
+    },
+    {
+      "ref": "pentacles-8",
+      "en": "Pentacles-8",
+      "cn": "星币八",
+      "suit": "pentacles",
+      "rank": 8,
+      "element": "土",
+      "planet": "金星",
+      "sign": ""
+    },
+    {
+      "ref": "pentacles-9",
+      "en": "Pentacles-9",
+      "cn": "星币九",
+      "suit": "pentacles",
+      "rank": 9,
+      "element": "土",
+      "planet": "金星",
+      "sign": ""
+    },
+    {
+      "ref": "pentacles-10",
+      "en": "Pentacles-10",
+      "cn": "星币十",
+      "suit": "pentacles",
+      "rank": 10,
+      "element": "土",
+      "planet": "金星",
+      "sign": ""
+    },
+    {
+      "ref": "pentacles-page",
+      "en": "Pentacles-Page",
+      "cn": "星币侍从",
+      "suit": "pentacles",
+      "rank": "page",
+      "element": "土",
+      "planet": "金星",
+      "sign": ""
+    },
+    {
+      "ref": "pentacles-knight",
+      "en": "Pentacles-Knight",
+      "cn": "星币骑士",
+      "suit": "pentacles",
+      "rank": "knight",
+      "element": "土",
+      "planet": "金星",
+      "sign": ""
+    },
+    {
+      "ref": "pentacles-queen",
+      "en": "Pentacles-Queen",
+      "cn": "星币皇后",
+      "suit": "pentacles",
+      "rank": "queen",
+      "element": "土",
+      "planet": "金星",
+      "sign": ""
+    },
+    {
+      "ref": "pentacles-king",
+      "en": "Pentacles-King",
+      "cn": "星币国王",
+      "suit": "pentacles",
+      "rank": "king",
+      "element": "土",
+      "planet": "金星",
+      "sign": ""
+    }
+  ]
+}

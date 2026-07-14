@@ -1,0 +1,18 @@
+# 原始提示词(仅本地参考资料,不进仓库)
+时间流牌阵.md
+凯尔特十字阵.md
+四季牌阵.md
+
+# Claude Code 本地状态
+.claude/
+
+# 塔罗会话工作文件(每轮落盘的 session.json 等,含用户隐私)
+.nov-tarot/
+
+# Python
+__pycache__/
+*.pyc
+
+# 系统
+.DS_Store
+Thumbs.db

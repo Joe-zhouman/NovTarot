@@ -1,0 +1,27 @@
+{
+  "_note": "占位 benchmark — 本 skill 输出为塔罗牌解读(主观输出),用户选择肉眼验收而非量化评测。真实测试内容见 tests/manual-acceptance.md(3 个覆盖三牌阵的验收 prompt + 逐项验收清单)。此文件为 check-skill #4 的结构占位,不是真实跑出的量化数据。将来若改用量化评测,用 skill-creator-plus 的 init-workspace + aggregate_benchmark 流程重新生成并替换本文件。",
+  "skill_name": "nov-tarot",
+  "test_method": "manual-acceptance",
+  "iteration": 1,
+  "status": "pending-manual-review",
+  "evals": [
+    {
+      "id": "time-flow-relationship",
+      "prompt": "问题:我和最近闹翻的朋友还能和好吗 / 1-逆位-宝剑七 / 2-正位-星币五 / 3-正位-圣杯三",
+      "spread": "time-flow",
+      "expectations": ["逆位读成受阻/转化而非坏", "三牌能量演变", "建议挂回牌面"]
+    },
+    {
+      "id": "celtic-cross-career",
+      "prompt": "第1轮: 我在考虑换工作,但现在的单位很稳定,该不该跳? (后续多轮逐张给牌)",
+      "spread": "celtic-cross",
+      "expectations": ["逐牌分层解析", "不透露下一张牌", "收束给分层建议"]
+    },
+    {
+      "id": "four-seasons-libra",
+      "prompt": "星座:天秤座 / 大阿卡纳-正位-正义 / 圣杯-逆位-圣杯二 / 宝剑-正位-宝剑国王 / 星币-正位-星币七 / 权杖-逆位-权杖八",
+      "spread": "four-seasons",
+      "expectations": ["正义作轴心且与星座共鸣", "四花色回扣核心牌", "建议挂回牌面"]
+    }
+  ]
+}
