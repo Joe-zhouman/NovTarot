@@ -158,6 +158,15 @@ def apply_no_reversals(drawn):
     return drawn
 
 
+def attach_meanings(drawn, deck):
+    """给每张牌附带牌意 md(读 references/cards/<deck>/<ref>.md)。缺文件的牌 meaning 留 None。"""
+    cards_root = SCRIPT_DIR.parent / "references" / "cards" / deck
+    for c in drawn:
+        md_path = cards_root / f"{c['ref']}.md"
+        c["meaning"] = md_path.read_text(encoding="utf-8") if md_path.is_file() else None
+    return drawn
+
+
 def format_json(drawn, spread_key):
     return json.dumps({
         "spread": spread_key,
@@ -172,10 +181,20 @@ def format_pretty(drawn, spread_key):
         "time-flow": "时间流牌阵(3 张)",
         "celtic": "凯尔特十字阵(10 张)",
         "four-seasons": "四季牌阵(5 张)",
+        "single": "单张大阿卡纳(1 张)",
+        "relationship": "关系牌阵(7 张)",
+        "zodiac": "黄道十二宫(12 张)",
+        "mind-body-spirit": "身心灵(3 张)",
+        "choice": "选择牌阵(5 张)",
     }.get(spread_key, spread_key)
+    has_meaning = any(c.get("meaning") for c in drawn)
     lines = [f"=== {spread_name} ==="]
     for c in drawn:
         lines.append(f"{c['position']:>2}. [{c['label']}] {c['cn']}({c['en']}) — {c['orientation']}")
+        if has_meaning and c.get("meaning"):
+            lines.append("")  # 空行分隔
+            lines.append(c["meaning"])
+            lines.append("")
     return "\n".join(lines)
 
 
@@ -193,6 +212,10 @@ def main():
                         help="随机种子,用于复现同一局抽牌")
     parser.add_argument("--deck", default=str(DEFAULT_DECK),
                         help=f"牌池 JSON 路径(默认 {DEFAULT_DECK})")
+    parser.add_argument("--system", default="waite",
+                        help="塔罗体系(牌意目录名,当前 waite)。带牌意时用")
+    parser.add_argument("--no-meanings", action="store_true",
+                        help="不带牌意(默认带,方便直接解读)。关掉后只输出抽到的牌")
     parser.add_argument("--format", choices=["json", "pretty"], default=None,
                         help="输出格式。默认:TTY 用 pretty,管道用 json")
     args = parser.parse_args()
@@ -209,6 +232,9 @@ def main():
 
     if args.no_reversals:
         drawn = apply_no_reversals(drawn)
+
+    if not args.no_meanings:
+        drawn = attach_meanings(drawn, args.system)
 
     if fmt == "json":
         sys.stdout.write(format_json(drawn, args.spread) + "\n")
