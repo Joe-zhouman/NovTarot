@@ -104,7 +104,8 @@ python3 scripts/draw.py --spread <英文名> --no-reversals   # 全正位
 
 牌阵英文名见上方路由表(time-flow / celtic / four-seasons / single / relationship / zodiac / mind-body-spirit / choice)。定牌阵时已确定英文名,直接传入。
 
-- `--spread <英文名>` 按牌阵决定抽牌结构:全随机牌阵随机抽 N 张;固定结构牌阵(four-seasons/single)按花色约束抽。
+- `--spread <英文名>` 按牌阵决定抽牌结构:全随机牌阵随机抽 N 张;固定结构牌阵(four-seasons)按花色约束抽。
+- **大阿卡纳抽取用沓法**(single 整副、four-seasons 的大阿卡纳位):从 78 张抽 10 张,依次揭示,第一张大阿卡纳为答案。draw.py 会展示"依次翻牌→命中"的过程。若 10 张无大阿卡纳,标记留空——视为**逆位命运之轮**(命运转动受阻)或**逆位世界**(未圆满),你判断哪个更像这次命运主题。
 - **默认带牌意**(每张牌的牌意 md + 占星骨架)。`--no-meanings` 关掉只出牌。
 - `--no-reversals` 关闭逆位,默认每张牌正逆各半。
 - `--system waite` 指定体系(牌意目录,当前 waite)。

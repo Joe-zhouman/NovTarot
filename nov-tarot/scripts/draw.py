@@ -46,9 +46,8 @@ SPREADS = {
     },
     "single": {
         "count": 1,
-        "structure": "fixed-suits",  # 从大阿卡纳抽一张
+        "structure": "major-from-pile",  # 抽10张沓找第一张大阿卡纳
         "labels": ["大阿卡纳(单牌回答)"],
-        "suits_order": ["major"],
     },
     "relationship": {
         "count": 7,
@@ -114,41 +113,80 @@ def load_deck(deck_path):
     return cards
 
 
+def draw_major_from_pile(cards, rng, pile_size=10):
+    """大阿卡纳抽取的传统沓法:从整副牌抽 pile_size 张,依次揭示,
+    第一张大阿卡纳为答案。若无大阿卡纳,返回 None(留空,agent 裁决命运之轮/世界)。
+    返回 (命中牌或None, 10张沓过程)。
+    """
+    pile = rng.sample(cards, pile_size)
+    for c in pile:
+        if c["suit"] == "major":
+            return c, pile
+    return None, pile
+
+
 def draw_for_spread(cards, spread_key, rng):
-    """按牌阵结构抽牌。返回有序的牌列表(已含正逆位)。"""
+    """按牌阵结构抽牌。返回有序的牌列表(已含正逆位)。
+    大阿卡纳位用沓法(major-from-pile):抽10张找第一张大阿卡纳,无则留空。
+    """
     spread = SPREADS[spread_key]
     structure = spread["structure"]
 
+    # 记录沓法过程(若有),供输出展示
+    pile_info = []  # 每个用沓法的位置的 (位置标签, 沓, 命中)
+
     if structure == "random":
-        # 全随机抽 N 张,不重复
         drawn = rng.sample(cards, spread["count"])
     elif structure == "fixed-suits":
-        # 按指定花色顺序,每个花色随机抽一张
         drawn = []
         for suit in spread["suits_order"]:
-            pool = [c for c in cards if c["suit"] == suit]
-            drawn.append(rng.choice(pool))
+            if suit == "major":
+                # 大阿卡纳用沓法
+                hit, pile = draw_major_from_pile(cards, rng)
+                drawn.append(hit)  # 可能 None(留空)
+                pile_info.append((suit, pile, hit))
+            else:
+                pool = [c for c in cards if c["suit"] == suit]
+                drawn.append(rng.choice(pool))
+    elif structure == "major-from-pile":
+        # 整个牌阵就是抽一张大阿卡纳(single)
+        hit, pile = draw_major_from_pile(cards, rng)
+        drawn = [hit]
+        pile_info.append(("major", pile, hit))
     else:
         emit_error("internal_error", "unknown_structure", None,
-                   f"未知抽牌结构: {structure}",
-                   "这是脚本 bug,请报告")
-        return  # 不会到这
+                   f"未知抽牌结构: {structure}", "这是脚本 bug,请报告")
+        return
 
-    # 给每张牌加正逆位 + 位置标签
+    # 给每张牌加正逆位 + 位置标签(留空的位特殊处理)
     labels = spread["labels"]
     result = []
     for i, card in enumerate(drawn):
         orientation = "逆位" if rng.random() < 0.5 else "正位"
-        result.append({
-            "position": i + 1,
-            "label": labels[i] if i < len(labels) else f"第{i+1}张",
-            "ref": card["ref"],
-            "en": card["en"],
-            "cn": card["cn"],
-            "suit": card["suit"],
-            "orientation": orientation,
-        })
-    return result
+        if card is None:
+            # 大阿卡纳留空:命运未给出明确回应,agent 裁决逆位命运之轮/世界
+            result.append({
+                "position": i + 1,
+                "label": labels[i] if i < len(labels) else f"第{i+1}张",
+                "ref": None,
+                "en": None,
+                "cn": "（留空·命运未明示）",
+                "suit": "major",
+                "orientation": None,
+                "empty_major": True,
+                "hint": "10 张沓中无大阿卡纳。视为逆位命运之轮(命运转动受阻)或逆位世界(未圆满),由 agent 判断哪个更像这次命运主题。",
+            })
+        else:
+            result.append({
+                "position": i + 1,
+                "label": labels[i] if i < len(labels) else f"第{i+1}张",
+                "ref": card["ref"],
+                "en": card["en"],
+                "cn": card["cn"],
+                "suit": card["suit"],
+                "orientation": orientation,
+            })
+    return result, pile_info
 
 
 def apply_no_reversals(drawn):
@@ -167,21 +205,31 @@ def attach_meanings(drawn, deck):
     return drawn
 
 
-def format_json(drawn, spread_key):
-    return json.dumps({
+def format_json(drawn, spread_key, pile_info=None):
+    out = {
         "spread": spread_key,
         "structure": SPREADS[spread_key]["structure"],
         "count": len(drawn),
         "cards": drawn,
-    }, ensure_ascii=False, indent=2)
+    }
+    if pile_info:
+        out["major_piles"] = [
+            {
+                "position_label": "大阿卡纳位" if s == "major" else s,
+                "pile": [{"cn": c["cn"], "en": c["en"], "suit": c["suit"]} for c in pile],
+                "hit": ({"cn": hit["cn"], "en": hit["en"]} if hit else None),
+            }
+            for s, pile, hit in pile_info
+        ]
+    return json.dumps(out, ensure_ascii=False, indent=2)
 
 
-def format_pretty(drawn, spread_key):
+def format_pretty(drawn, spread_key, pile_info=None):
     spread_name = {
         "time-flow": "时间流牌阵(3 张)",
         "celtic": "凯尔特十字阵(10 张)",
         "four-seasons": "四季牌阵(5 张)",
-        "single": "单张大阿卡纳(1 张)",
+        "single": "单张大阿卡纳(沓法:抽10张找首张大阿卡纳)",
         "relationship": "关系牌阵(7 张)",
         "zodiac": "黄道十二宫(12 张)",
         "mind-body-spirit": "身心灵(3 张)",
@@ -189,10 +237,31 @@ def format_pretty(drawn, spread_key):
     }.get(spread_key, spread_key)
     has_meaning = any(c.get("meaning") for c in drawn)
     lines = [f"=== {spread_name} ==="]
+
+    # 展示大阿卡纳沓法过程(若有)
+    if pile_info:
+        for _suit, pile, hit in pile_info:
+            lines.append("")
+            lines.append("〔大阿卡纳·沓法揭示〕依次翻开 10 张,第一张大阿卡纳为答案:")
+            seq = []
+            for c in pile:
+                mark = " ◀ 命中" if (hit and c["ref"] == hit["ref"]) else ""
+                seq.append(f"{c['cn']}({c['suit'][:3]}){mark}")
+                if hit and c["ref"] == hit["ref"]:
+                    break
+            lines.append("  " + " → ".join(seq))
+            if not hit:
+                lines.append("  ⚠ 10 张中无大阿卡纳 → 留空,视为逆位命运之轮或逆位世界(agent 裁决)")
+
+    lines.append("")
     for c in drawn:
-        lines.append(f"{c['position']:>2}. [{c['label']}] {c['cn']}({c['en']}) — {c['orientation']}")
+        orient = c.get("orientation") or "—"
+        en = c.get("en") or ""
+        lines.append(f"{c['position']:>2}. [{c['label']}] {c['cn']}({en}) — {orient}")
+        if c.get("empty_major"):
+            lines.append(f"    {c.get('hint','')}")
         if has_meaning and c.get("meaning"):
-            lines.append("")  # 空行分隔
+            lines.append("")
             lines.append(c["meaning"])
             lines.append("")
     return "\n".join(lines)
@@ -228,7 +297,7 @@ def main():
 
     cards = load_deck(Path(args.deck))
     rng = random.Random(args.seed)  # None → 真随机
-    drawn = draw_for_spread(cards, args.spread, rng)
+    drawn, pile_info = draw_for_spread(cards, args.spread, rng)
 
     if args.no_reversals:
         drawn = apply_no_reversals(drawn)
@@ -237,9 +306,9 @@ def main():
         drawn = attach_meanings(drawn, args.system)
 
     if fmt == "json":
-        sys.stdout.write(format_json(drawn, args.spread) + "\n")
+        sys.stdout.write(format_json(drawn, args.spread, pile_info) + "\n")
     else:
-        sys.stdout.write(format_pretty(drawn, args.spread) + "\n")
+        sys.stdout.write(format_pretty(drawn, args.spread, pile_info) + "\n")
 
 
 if __name__ == "__main__":
