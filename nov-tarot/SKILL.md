@@ -193,10 +193,11 @@ python3 scripts/log-turn.py --turn 1 --question "..." --spread time-flow \
    2. 用 Agent 工具 dispatch 一个 `general-purpose` subagent(没有注册专属 agent 类型,用 general-purpose 即可),**把上一步读到的 tarot-report-compiler.md 完整内容作为 prompt 的主体**,再附上本次会话的具体信息:session.json 路径、报告输出路径、共几轮。
    3. 不要 dispatch 一个空白的 general-purpose 然后让它自己去找指令文件——subagent 不一定知道去读那个文件。指令必须由你(主 agent)读出来、喂给它。
    4. subagent 生成 HTML 报告(当前卡图用占位符,见指令文件「卡图」一节)。
+   5. **渲染 PNG**:HTML 生成后,用 `scripts/render-report.js` 把它渲染成 PNG 整页图(见下方「渲染报告成图」)。HTML 和 PNG 都给用户——HTML 灵活(可缩放/搜索/打印/编辑,适合想细看的),PNG 直观(对话里直接看、方便分享,适合快速浏览)。不同人群各取所需。
 
    报告是该用户带走的纪念物,要有整体脉络——不是各轮摘要的堆砌,而是把整场会话串成一条线:用户带着什么来,经过几轮牌,看清了什么。
 
-3. **把报告交给用户**:告诉用户报告已生成、路径在哪。
+3. **把报告交给用户**:告诉用户 HTML 和 PNG 两个文件都已生成、路径在哪。HTML 是主交付物(完整可交互),PNG 是预览图(整页一目了然)。
 
 ### 收尾后:心理咨询的一面浮出
 
