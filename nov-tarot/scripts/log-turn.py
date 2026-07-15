@@ -15,6 +15,7 @@
       "spread": "time-flow",
       "reveal_mode": "holistic",
       "cards": [ {position,label,ref,en,cn,orientation}, ... ],
+      "effective_seed": 123456,   // 本轮有效种子(种子链),整局复现用
       "summary": "agent 写的该轮解读摘要",
       "logged_at": "ISO时间"
     }, ...
@@ -68,7 +69,11 @@ def save_session(path, data):
 
 
 def parse_cards(args):
-    """从 --cards-file 或 --cards-json 解析牌列表。"""
+    """从 --cards-file 或 --cards-json 解析牌列表 + 有效种子。
+
+    返回 (cards, effective_seed):cards 是牌数组;effective_seed 是 draw.py 顶层输出的
+    本轮有效种子(种子链),用于落盘进 session 供整局复现。无则 None。
+    """
     if args.cards_file:
         p = Path(args.cards_file)
         if not p.is_file():
@@ -81,14 +86,6 @@ def parse_cards(args):
         except json.JSONDecodeError as e:
             emit_error("io_error", "parse_error", "--cards-file",
                        f"牌文件 JSON 解析失败: {e}", "")
-        # draw.py 的输出是 {spread, cards:[...]},取 cards
-        if isinstance(data, dict) and "cards" in data:
-            return data["cards"]
-        if isinstance(data, list):
-            return data
-        emit_error("data_error", "invalid_cards", "--cards-file",
-                   "牌文件格式无法识别(需要 draw.py 的输出或牌数组)",
-                   "用 draw.py --format json 的输出")
     elif args.cards_json:
         try:
             data = json.loads(args.cards_json)
@@ -96,17 +93,22 @@ def parse_cards(args):
             emit_error("data_error", "parse_error", "--cards-json",
                        f"--cards-json 解析失败: {e}",
                        "传合法的 JSON 数组,或改用 --cards-file")
-        if isinstance(data, dict) and "cards" in data:
-            return data["cards"]
-        if isinstance(data, list):
-            return data
-        emit_error("data_error", "invalid_cards", "--cards-json",
-                   "--cards-json 需为牌数组或 draw.py 输出对象", "")
     else:
         emit_error("validation_error", "missing_argument", "--cards-file/--cards-json",
                    "必须提供 --cards-file 或 --cards-json",
                    "把 draw.py 的输出传进来")
-    return []  # 不会到这
+        return [], None  # 不会到这
+
+    # draw.py 的输出是 {spread, cards, effective_seed, ...},取 cards + effective_seed
+    if isinstance(data, dict) and "cards" in data:
+        return data["cards"], data.get("effective_seed")
+    if isinstance(data, list):
+        return data, None
+    src = "--cards-file" if args.cards_file else "--cards-json"
+    emit_error("data_error", "invalid_cards", src,
+               "牌文件格式无法识别(需要 draw.py 的输出或牌数组)",
+               "用 draw.py --format json 的输出")
+    return [], None  # 不会到这
 
 
 def main():
@@ -135,7 +137,7 @@ def main():
     if session.get("started") is None:
         session["started"] = datetime.now().isoformat(timespec="seconds")
 
-    cards = parse_cards(args)
+    cards, effective_seed = parse_cards(args)
 
     turn_record = {
         "turn": args.turn,
@@ -143,6 +145,7 @@ def main():
         "spread": args.spread,
         "reveal_mode": args.reveal_mode,
         "cards": cards,
+        "effective_seed": effective_seed,  # 本轮有效种子(种子链),整局复现用
         "summary": args.summary,
         "logged_at": datetime.now().isoformat(timespec="seconds"),
     }

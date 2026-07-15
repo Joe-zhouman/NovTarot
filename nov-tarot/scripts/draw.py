@@ -8,12 +8,13 @@
   draw.py --spread celtic                   # 凯尔特十字:10 张随机
   draw.py --spread four-seasons             # 四季:1 大阿卡纳 + 四花色各一
   draw.py --spread time-flow --no-reversals # 全正位
-  draw.py --spread time-flow --seed 42      # 可复现
+  draw.py --spread time-flow --seed 42      # 既定命运:第一轮用 42,之后每轮由上一轮的牌派生(种子链)
   draw.py --spread time-flow --format pretty
 
 stdout 只放抽牌结果(json 或 pretty)。错误以结构化 envelope 输出到 stderr。
 """
 import argparse
+import hashlib
 import json
 import os
 import random
@@ -113,6 +114,73 @@ def load_deck(deck_path):
     return cards
 
 
+def derive_next_seed(prev_seed, prev_card_refs):
+    """种子链:由上一轮的种子 + 上一轮抽到的牌,派生这一轮的种子。
+
+    命运是一条因果链——前一轮翻出的牌,种下下一轮的因。初始种子(用户给的命运之种)
+    锁定整局基调;每一轮的牌把命运往前推一步。同初始种子 + 同流程 → 同一条链,整局可复现;
+    而每轮牌不同 → 每轮种子自然不同(修复"全程同种子多轮复现同一组牌"的 bug)。
+
+    prev_seed: 上一轮的有效种子(第一轮传用户给的 base_seed)。
+    prev_card_refs: 上一轮抽到的牌的 ref 列表(第一轮传空列表)。
+    返回 32 位无符号整数。
+    """
+    material = f"{prev_seed}|{' '.join(prev_card_refs)}"
+    h = hashlib.sha256(material.encode("utf-8")).digest()
+    return int.from_bytes(h[:4], "big")
+
+
+def prev_turn_from_file(prev_path):
+    """从 --prev 指向的文件读"上一轮"的牌 ref + 有效种子,用于推进种子链。
+
+    调用链强制落盘:从第二轮起,agent 必须把上一轮的落盘文件传进 --prev,
+    draw.py 才能派生这一轮的种子。不落盘就没法抽下一轮——物理上消灭"攒到收尾才写"。
+
+    接受三种文件形态(都从中取出"最后一轮的牌"):
+      - session.json(log-turn 落盘的会话文件):取 turns 里 max-turn 的 cards + effective_seed
+      - 单轮 draw 输出({spread, cards, effective_seed}):取 cards + effective_seed
+      - 牌数组([{ref,...}]):直接用
+
+    返回 (prev_card_refs, prev_seed)。prev_seed 为 None 时,调用方回退用 base_seed。
+    """
+    p = Path(prev_path)
+    if not p.is_file():
+        emit_error("io_error", "file_not_found", "--prev",
+                   f"上一轮落盘文件不存在: {p}",
+                   "先把上一轮抽到的牌用 log-turn.py 落盘,再把落盘文件路径传给 --prev")
+    try:
+        with open(p, encoding="utf-8") as f:
+            data = json.load(f)
+    except json.JSONDecodeError as e:
+        emit_error("io_error", "parse_error", "--prev",
+                   f"上一轮落盘文件 JSON 解析失败: {e}",
+                   f"检查 {p} 是否合法(应是 log-turn 的 session.json 或 draw 的输出)")
+    # 形态1:session.json(有 turns 数组)→ 取最后一轮
+    if isinstance(data, dict) and isinstance(data.get("turns"), list) and data["turns"]:
+        nums = [t for t in data["turns"]
+                if isinstance(t, dict) and isinstance(t.get("turn"), int)]
+        if not nums:
+            emit_error("data_error", "invalid_prev", "--prev",
+                       f"{p} 的 turns 里没有有效的轮次记录",
+                       "确认 session.json 是 log-turn.py 正确落盘的")
+        last = max(nums, key=lambda t: t["turn"])
+        cards = last.get("cards") or []
+        refs = [c.get("ref") for c in cards if isinstance(c, dict) and c.get("ref")]
+        return refs, last.get("effective_seed")
+    # 形态2:单轮 draw 输出({cards: [...]})
+    if isinstance(data, dict) and isinstance(data.get("cards"), list):
+        refs = [c.get("ref") for c in data["cards"] if isinstance(c, dict) and c.get("ref")]
+        return refs, data.get("effective_seed")
+    # 形态3:牌数组
+    if isinstance(data, list):
+        refs = [c.get("ref") for c in data if isinstance(c, dict) and c.get("ref")]
+        return refs, None
+    emit_error("data_error", "invalid_prev", "--prev",
+               f"{p} 无法识别(应是 session.json / draw 输出 / 牌数组)",
+               "传 log-turn.py 的 session.json 或 draw.py 的输出")
+    return [], None  # 不会到这
+
+
 def draw_major_from_pile(cards, rng, pile_size=10):
     """大阿卡纳抽取的传统沓法:从整副牌抽 pile_size 张,依次揭示,
     第一张大阿卡纳为答案。若无大阿卡纳,返回 None(留空,agent 裁决命运之轮/世界)。
@@ -205,11 +273,12 @@ def attach_meanings(drawn, deck):
     return drawn
 
 
-def format_json(drawn, spread_key, pile_info=None):
+def format_json(drawn, spread_key, pile_info=None, effective_seed=None):
     out = {
         "spread": spread_key,
         "structure": SPREADS[spread_key]["structure"],
         "count": len(drawn),
+        "effective_seed": effective_seed,  # 本轮有效种子(种子链);落盘进 session 供复现
         "cards": drawn,
     }
     if pile_info:
@@ -224,7 +293,7 @@ def format_json(drawn, spread_key, pile_info=None):
     return json.dumps(out, ensure_ascii=False, indent=2)
 
 
-def format_pretty(drawn, spread_key, pile_info=None):
+def format_pretty(drawn, spread_key, pile_info=None, effective_seed=None):
     spread_name = {
         "time-flow": "时间流牌阵(3 张)",
         "celtic": "凯尔特十字阵(10 张)",
@@ -237,6 +306,9 @@ def format_pretty(drawn, spread_key, pile_info=None):
     }.get(spread_key, spread_key)
     has_meaning = any(c.get("meaning") for c in drawn)
     lines = [f"=== {spread_name} ==="]
+    if effective_seed is not None:
+        # 内部信息:供落盘/复现用,不要念给用户
+        lines.append(f"[internal · 本轮种子 {effective_seed},落盘进 session 供复现]")
 
     # 展示大阿卡纳沓法过程(若有)
     if pile_info:
@@ -278,7 +350,11 @@ def main():
     parser.add_argument("--no-reversals", action="store_true",
                         help="关闭逆位,全部正位")
     parser.add_argument("--seed", type=int, default=None,
-                        help="随机种子,用于复现同一局抽牌")
+                        help="随机种子(既定命运 / 命运之种)。第一轮用本值;之后每轮的有效种子由上一轮的牌派生(种子链),整局可复现、每轮自然不同")
+    parser.add_argument("--turn", type=int, default=None,
+                        help="当前轮次号(1=首轮)。≥2 时强制要求 --prev,强制每轮抽完即落盘;不传则按 --prev 有无判定轮次")
+    parser.add_argument("--prev", default=None,
+                        help="上一轮的落盘文件(session.json 或 draw 输出)。第二轮起必传——draw.py 从中读上一轮的牌派生种子,也借此强制落盘")
     parser.add_argument("--deck", default=str(DEFAULT_DECK),
                         help=f"牌池 JSON 路径(默认 {DEFAULT_DECK})")
     parser.add_argument("--system", default="waite",
@@ -296,7 +372,32 @@ def main():
         fmt = args.format
 
     cards = load_deck(Path(args.deck))
-    rng = random.Random(args.seed)  # None → 真随机
+
+    # 种子链:既定命运(args.seed)是整局的命运之种。
+    # 第一轮(--prev 缺失 / --turn 1)直接用 base_seed;之后每轮的种子由
+    # 「上一轮的种子 + 上一轮抽到的牌」派生——前一轮的牌种下下一轮的因,命运成因果链。
+    # 调用链强制落盘:--turn ≥2 时 --prev 必传,不落盘就没法抽下一轮——物理上消灭"攒到收尾才写"。
+    # 完全混沌(不传 seed):真随机,不进链。
+    if args.turn is not None and args.turn >= 2 and args.prev is None:
+        emit_error("validation_error", "missing_prev", "--prev",
+                   f"第 {args.turn} 轮抽牌必须带 --prev(上一轮的落盘文件)",
+                   "先把上一轮抽到的牌用 log-turn.py 落盘,再把 session.json 路径传给 --prev")
+
+    if args.seed is None:
+        effective_seed = None  # 完全混沌
+    elif args.prev is None:
+        effective_seed = args.seed  # 第一轮:命运之种本身
+    else:
+        prev_refs, prev_seed = prev_turn_from_file(args.prev)
+        if not prev_refs:
+            # --prev 给了但取不到牌:文件异常,报错(不要静默退回第一轮)
+            emit_error("data_error", "empty_prev", "--prev",
+                       f"{args.prev} 里读不到上一轮的牌",
+                       "确认传的是上一轮真正落盘的文件;若这是第一轮,不要传 --prev")
+        base = prev_seed if prev_seed is not None else args.seed
+        effective_seed = derive_next_seed(base, prev_refs)
+
+    rng = random.Random(effective_seed)
     drawn, pile_info = draw_for_spread(cards, args.spread, rng)
 
     if args.no_reversals:
@@ -306,9 +407,9 @@ def main():
         drawn = attach_meanings(drawn, args.system)
 
     if fmt == "json":
-        sys.stdout.write(format_json(drawn, args.spread, pile_info) + "\n")
+        sys.stdout.write(format_json(drawn, args.spread, pile_info, effective_seed) + "\n")
     else:
-        sys.stdout.write(format_pretty(drawn, args.spread, pile_info) + "\n")
+        sys.stdout.write(format_pretty(drawn, args.spread, pile_info, effective_seed) + "\n")
 
 
 if __name__ == "__main__":
