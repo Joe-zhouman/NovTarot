@@ -24,6 +24,20 @@ import re
 import sys
 from pathlib import Path
 
+
+def _ensure_utf8_output():
+    """强制 stdout/stderr 使用 UTF-8 编码。
+
+    Windows 终端默认编码(GBK/CP936)无法正确渲染中文——
+    这里把 stdout/stderr 重配为 UTF-8,无论平台 locale 如何。
+    """
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(encoding="utf-8", errors="replace")
+        except (AttributeError, OSError):
+            pass  # 旧 Python 或某些 IDE 不支持 reconfigure,静默跳过
+
+
 SCRIPT_DIR = Path(__file__).resolve().parent
 SKILL_ROOT = SCRIPT_DIR.parent
 DEFAULT_DECK_DATA = SKILL_ROOT / "assets" / "card-data.json"
@@ -99,6 +113,7 @@ def read_card_md(deck, ref):
 
 
 def main():
+    _ensure_utf8_output()
     ap = argparse.ArgumentParser(description="查询塔罗牌牌意,直接输出牌意 markdown 到 stdout。",
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--deck", default="waite", help="塔罗体系(当前支持 waite)")

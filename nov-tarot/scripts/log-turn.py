@@ -36,6 +36,20 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+
+def _ensure_utf8_output():
+    """强制 stdout/stderr 使用 UTF-8 编码。
+
+    Windows 终端默认编码(GBK/CP936)无法正确渲染中文——
+    这里把 stdout/stderr 重配为 UTF-8,无论平台 locale 如何。
+    """
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(encoding="utf-8", errors="replace")
+        except (AttributeError, OSError):
+            pass  # 旧 Python 或某些 IDE 不支持 reconfigure,静默跳过
+
+
 DEFAULT_SESSION_DIR = Path(".nov-tarot")
 SESSION_FILE = "session.json"
 
@@ -112,6 +126,7 @@ def parse_cards(args):
 
 
 def main():
+    _ensure_utf8_output()
     parser = argparse.ArgumentParser(
         description="记录一轮塔罗解牌到会话工作文件(.nov-tarot/session.json)。",
         formatter_class=argparse.RawDescriptionHelpFormatter,

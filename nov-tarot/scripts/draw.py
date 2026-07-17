@@ -21,6 +21,21 @@ import random
 import sys
 from pathlib import Path
 
+
+def _ensure_utf8_output():
+    """强制 stdout/stderr 使用 UTF-8 编码。
+
+    Windows 终端默认编码(GBK/CP936)无法正确渲染中文——
+    draw.py 输出的牌名、正逆位、牌意在 GBK 终端全是乱码。
+    这里把 stdout/stderr 重配为 UTF-8,无论平台 locale 如何。
+    """
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(encoding="utf-8", errors="replace")
+        except (AttributeError, OSError):
+            pass  # 旧 Python 或某些 IDE 不支持 reconfigure,静默跳过
+
+
 # 牌池:优先 assets/card-data.json(相对脚本位置的 ../assets/)
 SCRIPT_DIR = Path(__file__).resolve().parent
 DEFAULT_DECK = SCRIPT_DIR.parent / "assets" / "card-data.json"
@@ -340,6 +355,7 @@ def format_pretty(drawn, spread_key, pile_info=None, effective_seed=None):
 
 
 def main():
+    _ensure_utf8_output()
     parser = argparse.ArgumentParser(
         description="塔罗抽牌脚本。按牌阵结构随机抽牌,带正逆位。",
         formatter_class=argparse.RawDescriptionHelpFormatter,
